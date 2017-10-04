@@ -13,18 +13,22 @@
 
 // these helpers produces better vm code in JS engines due to their
 // explicitness and function inlining
+// 是否未定义
 function isUndef (v) {
   return v === undefined || v === null
 }
 
+// 是否已定义
 function isDef (v) {
   return v !== undefined && v !== null
 }
 
+// 是否为 true
 function isTrue (v) {
   return v === true
 }
 
+// 是否为 false
 function isFalse (v) {
   return v === false
 }
@@ -32,6 +36,7 @@ function isFalse (v) {
 /**
  * Check if value is primitive
  */
+// 是否为原始数据 <String, Number, Boolean>
 function isPrimitive (value) {
   return (
     typeof value === 'string' ||
@@ -45,6 +50,7 @@ function isPrimitive (value) {
  * Objects from primitive values when we know the value
  * is a JSON-compliant type.
  */
+// 快速对象检查 - 当我们知道该值是符合JSON的类型时，这主要用于从原始值告知对象。
 function isObject (obj) {
   return obj !== null && typeof obj === 'object'
 }
@@ -55,10 +61,12 @@ var _toString = Object.prototype.toString;
  * Strict object type check. Only returns true
  * for plain JavaScript objects.
  */
+// 是否是一个清晰的对象 （不是 Function 之类）
 function isPlainObject (obj) {
   return _toString.call(obj) === '[object Object]'
 }
 
+// 是否是一个正则对象
 function isRegExp (v) {
   return _toString.call(v) === '[object RegExp]'
 }
@@ -66,6 +74,7 @@ function isRegExp (v) {
 /**
  * Check if val is a valid array index.
  */
+// 是否是一个有效的索引值
 function isValidArrayIndex (val) {
   var n = parseFloat(String(val));
   return n >= 0 && Math.floor(n) === n && isFinite(val)
@@ -74,6 +83,7 @@ function isValidArrayIndex (val) {
 /**
  * Convert a value to a string that is actually rendered.
  */
+// 将值转为实际呈现的数组
 function toString (val) {
   return val == null
     ? ''
@@ -86,6 +96,8 @@ function toString (val) {
  * Convert a input value to a number for persistence.
  * If the conversion fails, return original string.
  */
+// 将输入值转换为持久性的数字。
+// 如果转换失败，返回原始字符串。
 function toNumber (val) {
   var n = parseFloat(val);
   return isNaN(n) ? val : n
@@ -95,9 +107,10 @@ function toNumber (val) {
  * Make a map and return a function for checking if a key
  * is in that map.
  */
+// 制作一个映射病返回一个函数，用于检查该映射中的一个键
 function makeMap (
-  str,
-  expectsLowerCase
+  str, // 字符串
+  expectsLowerCase // 是否小写
 ) {
   var map = Object.create(null);
   var list = str.split(',');
@@ -112,16 +125,19 @@ function makeMap (
 /**
  * Check if a tag is a built-in tag.
  */
+// 是否是内建的标签
 var isBuiltInTag = makeMap('slot,component', true);
 
 /**
  * Check if a attribute is a reserved attribute.
  */
+// 是否是储备的属性
 var isReservedAttribute = makeMap('key,ref,slot,is');
 
 /**
  * Remove an item from an array
  */
+// 移除数组中的一个元素
 function remove (arr, item) {
   if (arr.length) {
     var index = arr.indexOf(item);
@@ -135,6 +151,7 @@ function remove (arr, item) {
  * Check whether the object has the property.
  */
 var hasOwnProperty = Object.prototype.hasOwnProperty;
+// 检查某个属性是否是特定对象上的实例属性
 function hasOwn (obj, key) {
   return hasOwnProperty.call(obj, key)
 }
@@ -142,6 +159,7 @@ function hasOwn (obj, key) {
 /**
  * Create a cached version of a pure function.
  */
+// 缓存一个纯净的版本
 function cached (fn) {
   var cache = Object.create(null);
   return (function cachedFn (str) {
@@ -153,6 +171,9 @@ function cached (fn) {
 /**
  * Camelize a hyphen-delimited string.
  */
+// 骆驼化一个连字符分隔的字符串
+// 并缓存
+// camelize-example => camelizeExample
 var camelizeRE = /-(\w)/g;
 var camelize = cached(function (str) {
   return str.replace(camelizeRE, function (_, c) { return c ? c.toUpperCase() : ''; })
@@ -161,6 +182,7 @@ var camelize = cached(function (str) {
 /**
  * Capitalize a string.
  */
+// 将字符串首字母大写缓存
 var capitalize = cached(function (str) {
   return str.charAt(0).toUpperCase() + str.slice(1)
 });
@@ -168,6 +190,8 @@ var capitalize = cached(function (str) {
 /**
  * Hyphenate a camelCase string.
  */
+// 链接一个驼峰语法的字符串
+// camelizeExample => camelize-example
 var hyphenateRE = /\B([A-Z])/g;
 var hyphenate = cached(function (str) {
   return str.replace(hyphenateRE, '-$1').toLowerCase()
@@ -176,6 +200,7 @@ var hyphenate = cached(function (str) {
 /**
  * Simple bind, faster than native
  */
+// 一个简单的 bind 函数，比原生的更快
 function bind (fn, ctx) {
   function boundFn (a) {
     var l = arguments.length;
@@ -193,6 +218,7 @@ function bind (fn, ctx) {
 /**
  * Convert an Array-like object to a real Array.
  */
+// 转换一个类数组对象为真正的数组
 function toArray (list, start) {
   start = start || 0;
   var i = list.length - start;
@@ -206,6 +232,7 @@ function toArray (list, start) {
 /**
  * Mix properties into target object.
  */
+// 将属性混合进特定对象
 function extend (to, _from) {
   for (var key in _from) {
     to[key] = _from[key];
@@ -216,6 +243,7 @@ function extend (to, _from) {
 /**
  * Merge an Array of Objects into a single Object.
  */
+// 合并一个对象数组为一个单独的对象
 function toObject (arr) {
   var res = {};
   for (var i = 0; i < arr.length; i++) {
@@ -231,21 +259,25 @@ function toObject (arr) {
  * Stubbing args to make Flow happy without leaving useless transpiled code
  * with ...rest (https://flow.org/blog/2017/05/07/Strict-Function-Call-Arity/)
  */
+// TODO
 function noop (a, b, c) {}
 
 /**
  * Always return false.
  */
+// 总是返回 false
 var no = function (a, b, c) { return false; };
 
 /**
  * Return same value
  */
+// 返回一样的值
 var identity = function (_) { return _; };
 
 /**
  * Generate a static keys string from compiler modules.
  */
+// TODO
 function genStaticKeys (modules) {
   return modules.reduce(function (keys, m) {
     return keys.concat(m.staticKeys || [])
@@ -256,6 +288,7 @@ function genStaticKeys (modules) {
  * Check if two values are loosely equal - that is,
  * if they are plain objects, do they have the same shape?
  */
+
 function looseEqual (a, b) {
   if (a === b) { return true }
   var isObjectA = isObject(a);
@@ -299,6 +332,7 @@ function looseIndexOf (arr, val) {
 /**
  * Ensure a function is called only once.
  */
+// 确定一个函数只被调用了一次
 function once (fn) {
   var called = false;
   return function () {
@@ -576,7 +610,6 @@ function handleError (err, vm, info) {
 /*  */
 /* globals MutationObserver */
 
-// can we use __proto__?
 var hasProto = '__proto__' in {};
 
 // Browser environment sniffing
@@ -783,9 +816,6 @@ Dep.prototype.notify = function notify () {
   }
 };
 
-// the current target watcher being evaluated.
-// this is globally unique because there could be only one
-// watcher being evaluated at any time.
 Dep.target = null;
 var targetStack = [];
 
@@ -1173,11 +1203,6 @@ function dependArray (value) {
 
 /*  */
 
-/**
- * Option overwriting strategies are functions that handle
- * how to merge a parent option value and a child option
- * value into the final value.
- */
 var strats = config.optionMergeStrategies;
 
 /**
@@ -1985,18 +2010,6 @@ function checkProp (
 
 /*  */
 
-// The template compiler attempts to minimize the need for normalization by
-// statically analyzing the template at compile time.
-//
-// For plain HTML markup, normalization can be completely skipped because the
-// generated render function is guaranteed to return Array<VNode>. There are
-// two cases where extra normalization is needed:
-
-// 1. When the children contains components - because a functional component
-// may return an Array instead of a single root. In this case, just a simple
-// normalization is needed - if any child is an Array, we flatten the whole
-// thing with Array.prototype.concat. It is guaranteed to be only 1-level deep
-// because functional components already normalize their own children.
 function simpleNormalizeChildren (children) {
   for (var i = 0; i < children.length; i++) {
     if (Array.isArray(children[i])) {
@@ -3068,11 +3081,6 @@ Watcher.prototype.teardown = function teardown () {
   }
 };
 
-/**
- * Recursively traverse an object to evoke all converted
- * getters, so that every nested property inside the object
- * is collected as a "deep" dependency.
- */
 var seenObjects = new _Set();
 function traverse (val) {
   seenObjects.clear();
@@ -3551,7 +3559,6 @@ function mergeProps (to, from) {
 
 /*  */
 
-// hooks to be invoked on component VNodes during patch
 var componentVNodeHooks = {
   init: function init (
     vnode,
@@ -3902,9 +3909,6 @@ function applyNS (vnode, ns) {
 
 /*  */
 
-/**
- * Runtime helper for rendering v-for lists.
- */
 function renderList (
   val,
   render
@@ -3936,9 +3940,6 @@ function renderList (
 
 /*  */
 
-/**
- * Runtime helper for rendering <slot>
- */
 function renderSlot (
   name,
   fallback,
@@ -3969,18 +3970,12 @@ function renderSlot (
 
 /*  */
 
-/**
- * Runtime helper for resolving filters
- */
 function resolveFilter (id) {
   return resolveAsset(this.$options, 'filters', id, true) || identity
 }
 
 /*  */
 
-/**
- * Runtime helper for checking keyCodes from config.
- */
 function checkKeyCodes (
   eventKeyCode,
   key,
@@ -3996,9 +3991,6 @@ function checkKeyCodes (
 
 /*  */
 
-/**
- * Runtime helper for merging v-bind="object" into a VNode's data.
- */
 function bindObjectProps (
   data,
   tag,
@@ -4050,9 +4042,6 @@ function bindObjectProps (
 
 /*  */
 
-/**
- * Runtime helper for rendering static trees.
- */
 function renderStatic (
   index,
   isInFor
@@ -4725,8 +4714,6 @@ Vue$3.version = '2.4.4';
 
 /*  */
 
-// these are reserved for web because they are directly compiled away
-// during template compilation
 var isReservedAttr = makeMap('style,class');
 
 // attributes that should be using props for binding
@@ -4923,9 +4910,6 @@ var isTextInputType = makeMap('text,number,password,search,email,tel,url');
 
 /*  */
 
-/**
- * Query an element selector if it's not an element already.
- */
 function query (el) {
   if (typeof el === 'string') {
     var selected = document.querySelector(el);
@@ -6499,10 +6483,6 @@ function genDefaultModel (
 
 /*  */
 
-// normalize v-model event tokens that can only be determined at runtime.
-// it's important to place the event as the first in the array because
-// the whole point is ensuring the v-model callback gets called before
-// user-attached handlers.
 function normalizeEvents (on) {
   var event;
   /* istanbul ignore if */
@@ -7387,8 +7367,6 @@ var platformModules = [
 
 /*  */
 
-// the directive module should be applied last, after all
-// built-in modules have been applied.
 var modules = platformModules.concat(baseModules);
 
 var patch = createPatchFunction({ nodeOps: nodeOps, modules: modules });
@@ -7398,7 +7376,6 @@ var patch = createPatchFunction({ nodeOps: nodeOps, modules: modules });
  * properties to Elements.
  */
 
-/* istanbul ignore if */
 if (isIE9) {
   // http://www.matts411.com/post/internet-explorer-9-oninput/
   document.addEventListener('selectionchange', function () {
@@ -7528,7 +7505,6 @@ function trigger (el, type) {
 
 /*  */
 
-// recursively search for possible transition defined inside the component root
 function locateNode (vnode) {
   return vnode.componentInstance && (!vnode.data || !vnode.data.transition)
     ? locateNode(vnode.componentInstance._vnode)
@@ -7954,7 +7930,6 @@ var platformComponents = {
 
 /*  */
 
-// install platform specific utils
 Vue$3.config.mustUseProp = mustUseProp;
 Vue$3.config.isReservedTag = isReservedTag;
 Vue$3.config.isReservedAttr = isReservedAttr;
@@ -8004,7 +7979,6 @@ setTimeout(function () {
 
 /*  */
 
-// check whether current browser encodes a char inside attribute values
 function shouldDecode (content, encoded) {
   var div = document.createElement('div');
   div.innerHTML = "<div a=\"" + content + "\"/>";
@@ -8228,7 +8202,6 @@ var he = {
  * http://erik.eae.net/simplehtmlparser/simplehtmlparser.js
  */
 
-// Regular Expressions for parsing tags and attributes
 var attribute = /^\s*([^\s"'<>\/=]+)(?:\s*(=)\s*(?:"([^"]*)"+|'([^']*)'+|([^\s"'=<>`]+)))?/;
 // could use https://www.w3.org/TR/1999/REC-xml-names-19990114/#NT-QName
 // but for Vue templates we can enforce a simple charset
@@ -9826,8 +9799,6 @@ function transformSpecialNewlines (text) {
 
 /*  */
 
-// these keywords should not appear inside expressions, but operators like
-// typeof, instanceof and in are allowed
 var prohibitedKeywordRE = new RegExp('\\b' + (
   'do,if,for,let,new,try,var,case,else,with,await,break,catch,class,const,' +
   'super,throw,while,yield,delete,export,import,return,switch,default,' +
@@ -10070,9 +10041,6 @@ function createCompilerCreator (baseCompile) {
 
 /*  */
 
-// `createCompilerCreator` allows creating compilers that use alternative
-// parser/optimizer/codegen, e.g the SSR optimizing compiler.
-// Here we just export a default compiler using the default parts.
 var createCompiler = createCompilerCreator(function baseCompile (
   template,
   options
